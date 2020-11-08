@@ -1,18 +1,17 @@
 import React from 'react';
 import { Component } from 'react';
-
-import Search from './Search.js'
+import Search from './Search';
 
 class Directory extends Component {
-
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             employees: [],
-            
-        };
+            originalList: []
+        }
         this.sortArray = this.sortArray.bind(this);
         this.sortByName = this.sortByName.bind(this);
+        this.searchByName = this.searchByName.bind(this);
     }
 
 
@@ -21,6 +20,7 @@ class Directory extends Component {
             .then(res => res.json())
             .then(json => {
                 this.setState({ employees: this.sortArray(json.results) })
+                this.setState({ originalList: this.sortArray(json.results) })
             })
     };
 
@@ -34,28 +34,40 @@ class Directory extends Component {
             return 0
         });
     }
+
     sortByName() {
         let sortedEmployee = this.sortArray(this.state.employees);
         this.setState({ employees: sortedEmployee });
     }
 
+    searchByName(name) {
+        if (!name) {
+            this.setState({ employees: this.state.originalList });
+            return;
+        }
+        let searchResults = this.state.employees.filter(employee => {
+            return (employee.name.first.toUpperCase() === name.toUpperCase())
+        })
+        this.setState({ employees: searchResults });
+    }
 
 
     render() {
-        let employeeTable = this.state.employees.map((employee) => {
+        let employeeTable = this.state.employees.map((employee, index) => {
             return (
 
-                <tr>
-                    <th scope ='row'><img src={employee.picture.thumbnail} /> </th>
-                    <th>{`${employee.name.first} ${employee.name.last}`} </th>
-                    <th>{employee.email} </th>
-                    <th>{employee.phone} </th>
+                <tr key={index}>
+                    <td><img src={ employee.picture.thumbnail } /></td>
+                    <td>{`${ employee.name.first } ${ employee.name.last }`} </td>
+                    <td>{ employee.email } </td>
+                    <td>{ employee.phone } </td>
                 </tr>
             )
         })
         return (
-            
+
             <div className='Container'>
+                <Search searchHandler={ this.searchByName } />
                 <table className='table'>
                     <thead className='thead'>
                         <tr>
@@ -66,15 +78,12 @@ class Directory extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {employeeTable}
+                        { employeeTable }
                     </tbody>
                 </table>
             </div>
-           
         )
-
     }
-
 }
 
 export default Directory;
