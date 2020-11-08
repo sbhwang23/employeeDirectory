@@ -14,8 +14,7 @@
   Click here to view the app! [Employee Directory](https://sbhwang23.github.io/employeeDirectory/)
 
   ## Installing
-  npm install at the root
-  npm start 
+  npm install at the root then npm start 
 
   ## Usage
   Bootstrap, Create React App and Node
